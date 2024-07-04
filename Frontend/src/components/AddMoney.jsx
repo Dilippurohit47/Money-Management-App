@@ -18,7 +18,6 @@ const AddMoney = ({
   person,
 }) => {
   const save = () => {
-    console.log("save");
     const newPerson = {
       id: 5,
       name: name,

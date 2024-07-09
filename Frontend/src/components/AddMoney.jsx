@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { IoMdArrowDropdownCircle } from "react-icons/io";
 const AddMoney = ({
   AddMoneyBox,
@@ -17,27 +17,56 @@ const AddMoney = ({
   setPerson,
   person,
 }) => {
-  const save = () => {
+
+  const [moneyStatus, setMoneyStatus] = useState(0);
+
+  const save = async () => {
     const newPerson = {
-      id: 5,
       name: name,
-      money: totalMoney,
+      totalAmount: totalMoney,
       date: date,
-      things: things,
+      thingName: things,
       time: time,
       split: split,
+      status:moneyStatus,
     };
-
-    setPerson([...person, newPerson]);
-
-    setName("");
-    setDate("");
-    setThings("");
-    setTime("");
-    setTotalMoney("");
-    setSplit("");
+    fetch(`http://localhost:3000/user/newEntry?_id=123`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newPerson),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data.success) {
+          setName("");
+          setDate("");
+          setThings("");
+          setTime("");
+          setTotalMoney("");
+          setSplit("");
+          AddMoneyBox();
+        }
+      });
   };
 
+
+  const now = new Date();
+  const day = now.getDate().toString().padStart(2, "0");
+  const month = now.toLocaleString("default", { month: "long" });
+  const year = now.getFullYear();
+  const formattedDate = `${day} ${month} ${year}`;
+  setDate(formattedDate);
+
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+  const seconds = now.getSeconds();
+
+  const currentTime = `${hours}:${minutes}:${seconds}`;
+  setTime(currentTime);
+  console.log(moneyStatus);
   return (
     <div className="h-[62.5vh] flex justify-center flex-col absolute bg-[#96469c] items-center w-[100vw]">
       <div className="h-[50vh] flex flex-col gap-8  w-full px-2 py-6 ">
@@ -94,14 +123,28 @@ const AddMoney = ({
             <p className="text-[#ffffff]">Please Enter all fields</p>
           </>
         )}
+
+        <div className="flex gap-3  justify-center">
+          <button
+            className={` ${moneyStatus === 1 ? "bg-red-500 " :"bg-red-800"} px-5 rounded-full  py-[6px] text-[1.1rem] `}
+            onClick={() => setMoneyStatus(1)}
+          >
+            dena hai
+          </button>
+          <button
+            className={` ${moneyStatus === 2 ? "bg-green-500 " :"bg-green-800"}  px-5 rounded-full  py-[6px] text-[1.1rem] `}
+            onClick={() => setMoneyStatus(2)}
+          >
+            Lena hai
+          </button>
+        </div>
       </div>
 
       <button
         disabled={!name || !date || !things || !time || !totalMoney}
-        className="bg-white px-5 rounded-full  py-[6px] text-[1.1rem] "
+        className={`bg-white px-5 rounded-full  py-[6px] text-[1.1rem] `}
         onClick={() => {
           save();
-          AddMoneyBox();
         }}
       >
         save

@@ -1,25 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Person from "../components/Person";
 import AddMoney from "../components/AddMoney";
+import { allMembers } from "../../../Backend/Controllers/MoneyManage";
 
 const HomePage = () => {
-  const [person, setPerson] = useState([
-    {
-      id: 1,
-      name: "dilip",
-      money: "400",
-    },
-    {
-      id: 1,
-      name: "dilip",
-      money: "400",
-    },
-
-  ]);
+  const [person, setPerson] = useState([])
 
   const [add, setAdd] = useState(false);
 
-  console.log(person);
+
+  useEffect(() => {
+    fetch(`http://localhost:3000/user/allMembers?_id=123`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          setPerson(data.allMembers)
+          console.log(allMembers)
+        } else {
+          console.error("Error:", data.message);
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+
+console.log(person)
   const AddMoneyBox = () => {
     setAdd((prev) => !prev);
   };
@@ -30,18 +36,13 @@ const HomePage = () => {
   const [time, setTime] = useState("");
   const [totalMoney, setTotalMoney] = useState("");
   const [split, setSplit] = useState("");
-  console.log("name", name);
-  console.log("time", time);
-  console.log("tm", totalMoney);
-  console.log("t", things);
-  console.log("s", split);
-  console.log("d", date);
-
+         
+         
   return (
     <div className=" h-[100vh] relative  overflow-hidden  ">
       <h1>Money Management</h1>
       <div className="bg-[#80808090] h-[100vh] w-[100vw] py-2">
-        <Person person={person} />
+        <Person person={person}  />
         <div
           className="bg-red-500 flex justify-center fixed items-center top-[70vh] left-32  hover:bg-red-600  h-16 w-16 rounded-full text-white"
           onClick={AddMoneyBox}
